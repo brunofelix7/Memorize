@@ -1,7 +1,9 @@
 import SwiftUI
 
 //  ContentView funciona como uma View
-struct ContentView: View {
+struct EmojiMemoryGameView: View {
+    
+    @ObservedObject var viewModel: EmojiMemoryGame
     
     /*
      var body -> Em programacao funcional sao propriedades e nao variaveis
@@ -11,9 +13,11 @@ struct ContentView: View {
         //  Posiciona os componentes na horizontal
         HStack {
             //  Recebe um Array e multiplica das Views pelo size desse Array
-            ForEach(0..<4) { index in
+            ForEach(viewModel.cards) { card in
                 //  Voce precisa inicializar as variaveis declaradas
-                CardView(isFaceUp: false)
+                CardView(card: card).onTapGesture {
+                    self.viewModel.choose(card: card)
+                }
             }
         }
             .padding()
@@ -25,19 +29,19 @@ struct ContentView: View {
 //  Podemos criar sctructs separadamente para depois chama-los
 struct CardView: View {
     
-    var isFaceUp: Bool
+    var card: MemoryGame<String>.Card
     
     var body: some View {
         //  Agrupo os componentes um dentro do outro
         ZStack {
-            if isFaceUp {
+            if card.isFaceUp {
                 //  Cria um retangulo na tela
                 RoundedRectangle(cornerRadius: 10.0)
                     .fill(Color.white)
                 RoundedRectangle(cornerRadius: 10.0)
                     .stroke(lineWidth: 3)
                 //  Exibe um texto na tela
-                Text("👻")
+                Text(card.content)
             } else {
                 RoundedRectangle(cornerRadius: 10.0).fill()
             }
@@ -48,6 +52,6 @@ struct CardView: View {
 //  Necessario para executar minha pre-visualizacao
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        EmojiMemoryGameView(viewModel:  EmojiMemoryGame())
     }
 }
